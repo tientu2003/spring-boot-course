@@ -11,6 +11,7 @@ import rewards.internal.account.Beneficiary;
 
 import java.net.URI;
 import java.util.Random;
+import java.util.logging.Logger;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -52,7 +53,6 @@ public class AccountClientTests {
 	}
 	
 	@Test
-	@Disabled
 	public void createAccount() {
 		// Use a unique number to avoid conflicts
 		String number = String.format("12345%4d", random.nextInt(10000));
@@ -66,12 +66,12 @@ public class AccountClientTests {
 		//  - Note that 'RestTemplate' has two methods for this.
 		//  - Use the one that returns the location of the newly created
 		//    resource and assign that to a variable.
-		URI newAccountLocation = null; // Modify this line to use the restTemplate
+		URI newAccountLocation = restTemplate.postForLocation(BASE_URL+"/accounts", account); // Modify this line to use the restTemplate
 
 		//	TODO-09: Retrieve the Account you just created from
 		//	         the location that was returned.
 		//	- Run this test, then. Make sure the test succeeds.
-		Account retrievedAccount = null; // Modify this line to use the restTemplate
+		Account retrievedAccount = restTemplate.getForObject(newAccountLocation , Account.class); // Modify this line to use the restTemplate
 		
 		assertEquals(account.getNumber(), retrievedAccount.getNumber());
 		
@@ -83,7 +83,6 @@ public class AccountClientTests {
 	}
 	
 	@Test
-	@Disabled
 	public void addAndDeleteBeneficiary() {
 		// perform both add and delete to avoid issues with side effects
 		
@@ -92,15 +91,16 @@ public class AccountClientTests {
 		// - Create a new Beneficiary called "David" for the account with id 1
 		//	 (POST the String "David" to the "/accounts/{accountId}/beneficiaries" URL).
 		// - Store the returned location URI in a variable.
-		
+		URI responseUri = restTemplate.postForLocation(BASE_URL + "/accounts/1/beneficiaries", "David");
 		// TODO-14: Retrieve the Beneficiary you just created from the location that was returned
-		Beneficiary newBeneficiary = null; // Modify this line to use the restTemplate
+		Beneficiary newBeneficiary = restTemplate.getForObject(responseUri, Beneficiary.class); // Modify this line to use the restTemplate
 		
 		assertNotNull(newBeneficiary);
 		assertEquals("David", newBeneficiary.getName());
 		
 		// TODO-15: Delete the newly created Beneficiary
 
+		restTemplate.delete(responseUri);
 
 		HttpClientErrorException httpClientErrorException = assertThrows(HttpClientErrorException.class, () -> {
 			System.out.println("You SHOULD get the exception \"No such beneficiary with name 'David'\" in the server.");
