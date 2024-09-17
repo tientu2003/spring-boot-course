@@ -1,4 +1,6 @@
 # Core Spring and Spring Boot Lab Projects
+![alt text](https://github.com/[username]/[reponame]/blob/[branch]/image.jpg?raw=true](https://github.com/tientu2003/spring-boot-course/blob/main/Learning-path.png?raw=true)
+
 
 Labs for the Core Spring and Spring Boot courses
 
